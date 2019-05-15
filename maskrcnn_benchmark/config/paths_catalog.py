@@ -7,6 +7,14 @@ import os
 class DatasetCatalog(object):
     DATA_DIR = "datasets"
     DATASETS = {
+        "ade_train": {
+            "img_dir": "ade20k/images",
+            "ann_file": "ade20k/annotations/instances_train.json"
+        },
+        "ade_val": {
+            "img_dir": "ade20k/images",
+            "ann_file": "ade20k/annotations/instances_val.json"
+        },
         "coco_2014_train": (
             "coco/train2014",
             "coco/annotations/instances_train2014.json",
@@ -24,6 +32,17 @@ class DatasetCatalog(object):
 
     @staticmethod
     def get(name):
+        if "ade_challenge" in name or "places_challenge" in name:
+            data_dir = "/data/vision/torralba/ade20k-places/data"
+            args = dict(
+                root=data_dir,
+                ann_file=os.path.join(data_dir, name)
+            )
+            return dict(
+                    factory="COCODataset",
+                    args=args,
+                    )
+
         if "coco" in name:
             data_dir = DatasetCatalog.DATA_DIR
             attrs = DatasetCatalog.DATASETS[name]
@@ -39,7 +58,7 @@ class DatasetCatalog(object):
 
 
 class ModelCatalog(object):
-    S3_C2_DETECTRON_URL = "https://s3-us-west-2.amazonaws.com/detectron"
+    S3_C2_DETECTRON_URL = "https://dl.fbaipublicfiles.com/detectron"
     C2_IMAGENET_MODELS = {
         "MSRA/R-50": "ImageNetPretrained/MSRA/R-50.pkl",
         "MSRA/R-101": "ImageNetPretrained/MSRA/R-101.pkl",
